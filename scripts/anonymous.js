@@ -10,7 +10,7 @@ var botNameLength = botName ? botName.length : 0;
 
 if (roomId != null) {
   module.exports = function(robot) {
-    var flag = [];   // 0: None, 1: Sticker, 2: Markdown
+    var flag = [];   // 0: None, 1: Sticker, 2: Markdown, 3: Photo, 4: Document, 5: Voice
 
     function purifyMessage(msg) {
       return msg.substring(botNameLength + 1);
@@ -61,6 +61,76 @@ if (roomId != null) {
           } catch (err) {
             console.log(err);
             res.send("Anonymous MarkDown Message: Error, please try again.");
+          }
+          break;
+        case 3:
+          try {
+            var photo = res.message.message.photo;
+            var photo_id = photo[photo.length-1].file_id;
+            var caption = res.message.message.caption || '';
+
+            robot.emit(
+              'telegram:invoke',
+              'sendPhoto', {
+                chat_id: roomId,
+                photo: photo_id,
+                caption: caption
+              }, function (error, response) {
+                if (error) {
+                  robot.logger.error(error);
+                }
+                robot.logger.debug(response);
+            });
+
+          } catch (err) {
+            console.log(err);
+            res.send("Anonymous Photo: Error, please try again.");
+          }
+          break;
+        case 4:
+          try {
+            var documentId = res.message.message.document.file_id;
+            var caption = res.message.message.caption || '';
+
+            robot.emit(
+              'telegram:invoke',
+              'sendDocument', {
+                chat_id: roomId,
+                document: documentId,
+                caption: caption
+              }, function (error, response) {
+                if (error) {
+                  robot.logger.error(error);
+                }
+                robot.logger.debug(response);
+            });
+
+          } catch (err) {
+            console.log(err);
+            res.send("Anonymous Photo: Error, please try again.");
+          }
+          break;
+        case 5:
+          try {
+            var voiceId = res.message.message.voice.file_id;
+            var caption = res.message.message.caption || '';
+
+            robot.emit(
+              'telegram:invoke',
+              'sendVoice', {
+                chat_id: roomId,
+                voice: voiceId,
+                caption: caption
+              }, function (error, response) {
+                if (error) {
+                  robot.logger.error(error);
+                }
+                robot.logger.debug(response);
+            });
+
+          } catch (err) {
+            console.log(err);
+            res.send("Anonymous Voice: Error, please try again.");
           }
           break;
       }
@@ -128,6 +198,39 @@ if (roomId != null) {
           }
           robot.logger.debug(response);
       });
+
+    });
+
+    robot.respond(/anonphoto/i, function(res){
+      if (roomId === res.message.room) {
+        return;
+      }
+
+      flag[res.message.user.id] = 3;
+
+      res.send("Anonymous Photo: OK, please send a photo to me.")
+
+    });
+
+    robot.respond(/anondoc/i, function(res){
+      if (roomId === res.message.room) {
+        return;
+      }
+
+      flag[res.message.user.id] = 4;
+
+      res.send("Anonymous Document: OK, please send a document to me.")
+
+    });
+
+    robot.respond(/anonvoice/i, function(res){
+      if (roomId === res.message.room) {
+        return;
+      }
+
+      flag[res.message.user.id] = 5;
+
+      res.send("Anonymous Voice: OK, please send voice to me.")
 
     });
   }
