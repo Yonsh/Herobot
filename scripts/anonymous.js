@@ -17,7 +17,7 @@ if (roomId != null) {
     }
 
     robot.listen(function(msg) {
-      return flag[msg.user.id] != null && flag[msg.user.id] != 0;
+      return msg.room != roomId && flag[msg.user.id] != null && flag[msg.user.id] != 0;
     }, function(res) {
       switch (flag[res.message.user.id]) {
         case 1:
