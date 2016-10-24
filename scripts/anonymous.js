@@ -107,26 +107,42 @@ if (roomId != null) {
 
           } catch (err) {
             console.log(err);
-            res.send("Anonymous Photo: Error, please try again.");
+            res.send("Anonymous Document: Error, please try again.");
           }
           break;
         case 5:
           try {
-            var voiceId = res.message.message.voice.file_id;
+            var voiceId = res.message.message.voice && res.message.message.voice.file_id;
+            var audioId = res.message.message.audio && res.message.message.audio.file_id;
             var caption = res.message.message.caption || '';
 
-            robot.emit(
-              'telegram:invoke',
-              'sendVoice', {
-                chat_id: roomId,
-                voice: voiceId,
-                caption: caption
-              }, function (error, response) {
-                if (error) {
-                  robot.logger.error(error);
-                }
-                robot.logger.debug(response);
-            });
+            if (voiceId) {
+              robot.emit(
+                'telegram:invoke',
+                'sendVoice', {
+                  chat_id: roomId,
+                  voice: voiceId,
+                  caption: caption
+                }, function (error, response) {
+                  if (error) {
+                    robot.logger.error(error);
+                  }
+                  robot.logger.debug(response);
+              });
+            } else {
+              robot.emit(
+                'telegram:invoke',
+                'sendAudio', {
+                  chat_id: roomId,
+                  audio: audioId,
+                  caption: caption
+                }, function (error, response) {
+                  if (error) {
+                    robot.logger.error(error);
+                  }
+                  robot.logger.debug(response);
+              });
+            }
 
           } catch (err) {
             console.log(err);
