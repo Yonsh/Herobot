@@ -14,8 +14,8 @@ module.exports = function (robot) {
           res.send('Something is wrong with the link.');
         }
 
-        res.send('http://dl.stickershop.line.naver.jp/products/0/0/1/' + productId + '/android/stickerpack.zip\n' +
-                 'http://dl.stickershop.line.naver.jp/products/0/0/1/' + productId + '/android/stickers.zip');
+        res.send('http://dl.stickershop.line.naver.jp/products/0/0/1/' + productId + '/iphone/stickerpack@2x.zip\n' +
+                 'http://dl.stickershop.line.naver.jp/products/0/0/1/' + productId + '/iphone/stickers@2x.zip');
       }
 
     });
